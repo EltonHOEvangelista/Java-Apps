@@ -1,0 +1,312 @@
+/**
+ * @author Elton Evangelista
+ * Using MaxHeap, the app organize assignments by due date.
+ */
+
+import java.util.Scanner;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+/**
+ * @author Elton Evangelista
+ * App to organize assignments.
+ */
+public class AssignmentApp {
+	
+	//Global objects
+	
+	private static Scanner userInput = new Scanner(System.in);		//to get user input
+	
+	private static MaxHeap<Assignment> mHeap;	//instantiate maxHeap class.
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		
+		Assignment assignment;		//to instantiate assignment class
+		
+		mHeap = new MaxHeap<>();	//to create an object of the maxHeap class
+		
+		final int ADDA = 1;	//variable to add assignment
+		final int RMA = 2;	//variable to remove assignment
+		final int RMAA = 3;	//variable to remove assignment
+		final int DNA = 4;	//variable to display next assignment
+		final int QUIT = 5;	//variable to exit
+			
+		int menuChoice;
+			
+		do {	
+			DisplayMenu();		//method to show initial instructions
+			
+			menuChoice = TryParseInt(userInput.next());
+			
+			switch(menuChoice) {
+			
+			case ADDA:		//add assignment
+				
+				assignment = new Assignment(); //instantiate new assignment
+				
+				AddCourse(assignment);	//call method to add course
+				
+				mHeap.add(assignment);		//add assignment into maxHeap
+				
+				break;
+				
+			case RMA:		//remove assignment
+				
+				if (!mHeap.isEmpty()) {		//check if assignments list is empty
+					
+					RemoveRootAssignment();		//call method to remove root assignment
+				}
+				else {
+					
+					System.out.println("The assignments list is empty");
+				}
+				
+				break;
+				
+			case RMAA:		//remove all assignments
+				
+				if (!mHeap.isEmpty()) {		//check if assignments list is empty
+					
+					RemoveAllAssgignments();		//call method to remove all assignments
+				}
+				else {
+					
+					System.out.println("The assignments list is empty");
+				}
+
+				break;
+				
+			case DNA:		//Show next assignment(due soon)
+				
+				if (!mHeap.isEmpty()) {		//check if assignments list is empty
+					
+					DisplayAssignmentDueSoon();	//call method to Display Assignment Due Soon
+				}
+				else {
+					
+					System.out.println("The assignments list is empty");
+				}
+				
+				break;
+				
+			case QUIT:		//exit
+				
+				break;
+				
+			default:		//invalid input
+				
+				System.out.println("Invalid input!");
+				break;
+			}			
+			
+		}
+		while(menuChoice != QUIT);
+		
+		System.out.println();
+		System.out.println("Goodbye. Thank you!");
+		userInput.close();
+	}
+
+
+
+	/**
+	 * @param assigment
+	 * method to add new course at assignment class 
+	 * 
+	 */
+	private static void AddCourse(Assignment assignment) {
+		// TODO Auto-generated method stub
+		
+		int cNumber; //local variable to hold course number
+		String cName; //local variable to hold course name
+		
+		do {	//adding course number
+			
+			System.out.println("Enter course number: ");
+			cNumber = TryParseInt(userInput.next());
+			
+			if(cNumber != 0) {
+				
+				assignment.setCourseId(cNumber);		//set course number at the assignment class
+			}
+			else {
+				
+				System.out.println("Invalid course number!");
+			}
+		}
+		while(cNumber ==0);
+		
+		
+		do {
+			
+			System.out.println("Enter course name: ");
+			cName = userInput.next();
+			
+			if(!cName.equals(null)) {
+				
+				assignment.setCourseName(cName);		//set course name at the assignment class
+			}
+			else {
+				
+				System.out.println("Invalid course name!");
+			}
+		}
+		while(cName.equals(null));
+		
+		AddAssignment(assignment);		//call method to add new assignment
+		
+	}
+	
+	
+	/**
+	 * @param assigment
+	 * method to add new assignment
+	 */
+	private static void AddAssignment(Assignment assignment) {
+		// TODO Auto-generated method stub
+		
+		String task; //local variable to hold task description
+		
+		do {
+			
+			System.out.println("Enter assignment description for course " + assignment.getCourseId() + ": ");
+			task = userInput.next();
+			
+			if(!task.equals(null)) {
+				
+				assignment.setTask(task);		//set assignment description at the assignment class
+			}
+			else {
+				
+				System.out.println("Invalid assignment description!");
+			}
+		}
+		while(task.equals(null));
+		
+		AddAssignmentDueDate(assignment);	//call method to set assignment due date
+	}
+	
+	/**
+	 * @param assignment
+	 * method to set assignment due date.
+	 */
+	private static void AddAssignmentDueDate(Assignment assignment) {
+		// TODO Auto-generated method stub
+		
+		Date dueDate; //local variable to hold due date
+		
+		do {
+			
+			System.out.println("Enter due date for assignment " + assignment.getTask() + " (course: " + assignment.getCourseId() + "). Use the format MM/dd/yyyy: ");
+			
+			dueDate = DateValidation(userInput.next());		//calling method to validate date format
+			
+			if(dueDate != null) {
+				
+				assignment.setDueDate(dueDate);		//set assignment due date at the assignment class
+			}
+			else {
+				
+				System.out.println("Invalid due date!");
+			}
+		}
+		while(dueDate == null);
+			
+	}
+	
+	/**
+	 * Display Assignment Due Soon 
+	 */
+	private static void DisplayAssignmentDueSoon() {
+		// TODO Auto-generated method stub
+		
+		System.out.println();
+		System.out.println("**************************************");
+		System.out.println("Course: " + mHeap.getMax().getCourseId() + " - " + mHeap.getMax().getCourseName());
+		System.out.println("Assignment: " + mHeap.getMax().getTask());
+		System.out.println("Due date: " + mHeap.getMax().getDueDate());
+		System.out.println("**************************************");	
+	}
+		
+	/**
+	 * method to remove root assignment.
+	 */
+	private static void RemoveRootAssignment() {
+		// TODO Auto-generated method stub
+		
+		mHeap.removeMax();
+	}
+	
+	/**
+	 * method to remove root assignment.
+	 */
+	private static void RemoveAllAssgignments() {
+		// TODO Auto-generated method stub
+		
+		mHeap.clear();;
+	}
+
+	/**
+	 * @param dueDate	date entered by the user
+	 * @return true if date format is correct (MM/dd/yyyy)
+	 * method to validate date format.
+	 */
+	private static Date DateValidation(String dueDate) {
+		// TODO Auto-generated method stub
+
+		Date date = null;
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");	//setting date format	
+
+        try {
+            
+            date = dateFormat.parse(dueDate);	// Parse the string into a Date object
+        }
+        catch (ParseException e) {
+        	
+            e.printStackTrace();
+        }
+		
+		return date;
+	}
+
+	/**
+	 * Display initial menu
+	 */
+	private static void DisplayMenu() {
+		// TODO Auto-generated method stub
+		
+		System.out.println("**************************************");
+		System.out.println("         ASSIGNMENTS TO DO            ");
+		System.out.println("Enter an option bellow:               ");
+		System.out.println("[1] - add assignment                  ");
+		System.out.println("[2] - remove assignment due soon      ");
+		System.out.println("[3] - remove all assignments          ");
+		System.out.println("[4] - Show next assignment(due soon)  ");
+		System.out.println("[5] - quit                            ");
+		System.out.println("**************************************");	
+	}
+	
+	/**
+	 * @param user's input
+	 * @return parseInt(input) or 0 for exception
+	 */
+	private static int TryParseInt(String input) {
+		// TODO Auto-generated method stub
+		
+		try {
+			
+			return Integer.parseInt(input);
+		}
+		catch(Exception e) {
+			
+			return 0;
+		}		
+	}
+}
