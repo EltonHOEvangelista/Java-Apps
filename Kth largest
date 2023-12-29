@@ -1,0 +1,175 @@
+/**
+ * @author Elton Evangelista
+ * Using MaxHeap, the app to find the kth largest element in a collection of integer values.
+ */
+
+import java.util.Random;
+import java.util.Scanner;
+
+/**
+ * @author Elton Evangelista
+ * App to find the kth largest element in a collection of integer values.
+ */
+public class FindKthApp {
+	
+	final static int maxAmount = 25;	//maximum amount of elements
+
+	/**
+	 * @param args
+	 * main method of the application
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+
+		int kthLargest;		//kth largest number
+
+		final String nQUIT  = "quit";	//to quit
+		
+		String input;	//user input
+		
+		int amountOfElements;	//amount of number entered by the user
+		
+		MaxHeap<Integer> mHeap;		//instantiate maxHeap class
+	
+		Random rd;		//instantiate random class
+		
+		Scanner userInput = new Scanner(System.in);		//start scanner for user input.
+				
+		DisplayInitialMessage();	//method to display preliminary information
+			
+		
+		do {
+			
+			System.out.println("Please, enter an integer value from 1 to 25 or \"quit\" to exit:");
+			input = userInput.next();
+				
+			if (!input.equals(nQUIT)) {
+				
+				amountOfElements = TryParseInt(input);	//call method to Parse Integer.
+					
+				if (CheckIntegrity(amountOfElements)) {		//call method to check if input is between 1 to 25
+					
+					mHeap = new MaxHeap<>();	//create on object of maxHeap class
+					
+					rd = new Random();		//create on object of Random class
+					
+					for (int i=0;i<amountOfElements;i++) {	//filling up Heap
+						
+						mHeap.add(rd.nextInt(1, amountOfElements + 1));	//add element into maxHeap
+					}
+					
+					System.out.println("Please, enter the Kth largest value (from 1 to " + amountOfElements + "):");
+					kthLargest = TryParseInt(userInput.next());
+					
+					if (checkKthIntegrity(kthLargest, amountOfElements)){		//integer > 0 and < amount of number in the Heap.
+						
+						FindKthLagerstAndDisplayResult(mHeap, amountOfElements, kthLargest);	//Calling method to find kth largest and display result		
+					}
+				
+				}
+				else {
+					
+					System.out.println("Invalid input!");
+				}	
+			}
+
+		}
+		while(!input.equals(nQUIT));
+		
+		userInput.close();
+	}
+
+	/**
+	 * method to display initial information to the app's user.
+	 */
+	private static void DisplayInitialMessage() {
+		// TODO Auto-generated method stub
+		
+		System.out.println("*****************************************************************************************");
+		System.out.println("This app will create a collection of integer values based on the quantity requested.");
+		System.out.println("It will then return the Kth largest value matching your request.");
+		System.out.println("*****************************************************************************************");
+		System.out.println();	
+	}
+
+	/**
+	 * @param mHeap
+	 * @param amount
+	 * @param kthlargest
+	 * method to find the kth largest number and display it.
+	 */
+	private static void FindKthLagerstAndDisplayResult(MaxHeap<Integer> mHeap, int amount, int kthlargest) {
+		// TODO Auto-generated method stub
+		
+		int kthValue = 0;	//value of largest element
+		
+		System.out.println("Collection of values:");
+		
+		for (int i=1;i<=amount;i++) {
+			
+			System.out.print("[" + mHeap.getMax() + "] ");
+			
+			if (i == kthlargest) {
+				
+				kthValue = mHeap.getMax();
+			}
+			mHeap.removeMax();
+		}
+		
+		System.out.println();
+		System.out.println();
+		System.out.println("The " + kthlargest + "th largest value is: " + kthValue);
+		System.out.println();
+		System.out.println();	
+	}
+
+	/**
+	 * @param kthLargest
+	 * @param amount
+	 * @return boolean
+	 * method to check kth number. integer > 0 and < amount of number in the Heap.
+	 */
+	private static boolean checkKthIntegrity(int kthLargest, int amount) {
+		// TODO Auto-generated method stub
+		
+		if (kthLargest < 1 || kthLargest > amount) {
+			
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @param amount
+	 * @return boolean
+	 * //call method to check if input is between 1 to 25 (max amount of elements)
+	 */
+	private static boolean CheckIntegrity(int amount) {
+		// TODO Auto-generated method stub
+		
+		if (amount < 1 || amount > maxAmount) {
+		
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @param input
+	 * @return parsed input value. Return zero if fail.
+	 * Try parse integer. 
+	 */ 
+	private static int TryParseInt(String input) {
+		// TODO Auto-generated method stub
+		
+		try {
+			
+			return Integer.parseInt(input);	
+		}
+		catch(Exception e) {
+			
+			return 0;
+		}
+	}
+}
